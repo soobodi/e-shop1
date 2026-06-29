@@ -15,4 +15,14 @@ class Usuario(db.model):
     #--Metodos de contraseña
     def set_password(self, password_plano):
         """ Hash a la constraseña en texto plano"""
-        self.password 
+        self.password = generate_password_hash(password_plano)
+
+    def check_password(self, passwd):
+        """" Compara el texto plano con la contraseña encriptada"""    
+        return check_password_hash(passwd)
+    
+    def es_admin(self):
+        return self.rol == "admin"
+    
+    def __repr__(self):
+        return f'<Usuarios: {self.email}|{self.rol}>'
