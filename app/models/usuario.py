@@ -1,7 +1,7 @@
 from app import db
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
-class Usuario(db.model):
+class Usuario(db.Model):
     __tablename__ = 'usuarios'
 
     id      = db.Column(db.Integer, primary_key=True)
@@ -10,19 +10,22 @@ class Usuario(db.model):
     password = db.Column(db.String(256), unique =True, nullable=False)
     rol = db.Column(db.Enum('cliente','admin'),default='cliente')
     activo = db.Column(db.Boolean, default=True)
-    creado_en = db.Column(db.DataTime, default=datetime.now())
+    creado_en = db.Column(db.DateTime, default=datetime.now)
+
+    #relacion un usuario tiene muchos pedidos
+    pedidos=db.relationship('Pedido',backref='cliente',lazy=True)
 
     #--Metodos de contraseña
     def set_password(self, password_plano):
         """ Hash a la constraseña en texto plano"""
-        self.password = generate_password_hash(password_plano)
-
-    def check_password(self, passwd):
-        """" Compara el texto plano con la contraseña encriptada"""    
-        return check_password_hash(passwd)
+        self.password = generate_password_hash (password_plano)
+    
+    def check_password (self, passwd):
+        """Compara el texto plano con la contraseña encriptada"""
+        return self.check_password_hash(passwd)
     
     def es_admin(self):
         return self.rol == "admin"
     
     def __repr__(self):
-        return f'<Usuarios: {self.email}|{self.rol}>'
+        return f' <Usuario: { self.email} | { self.rol}>'
